@@ -216,7 +216,10 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                     estado = 0
                     palavra = []
                 i+=1
-
+            estadolist.append(12)
+            lexemalist.append('EOF')
+            listcol.append(col)
+            listlinha.append(linha)
 for i in range(len(lexemalist)):
     if(lexemalist[i] in reservadas):
         classelist.append(lexemalist[i])
