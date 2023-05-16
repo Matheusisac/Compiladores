@@ -57,6 +57,22 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                 if(code[i] == '\n'):
                     col = 0
                     linha += 1
+                    
+                if(estado == 13):
+                    if(code[i] == '='):
+                        estado = 14
+                    elif(code[i] == '>'):
+                        estado = 15
+                    elif(code[i] == '-'):
+                        estado = 16
+                    else:
+                        palavra.pop()
+                        lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                        listcol.append(col)
+                        listlinha.append(linha)
+                        estadolist.append(estado)
+                        estado = 0
+                        palavra = [code[i]]
 
                 if(estado == 7):
                     if(code[i] == '"'):
@@ -98,6 +114,20 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
+                        
+                if(estado == 2):
+                    if(code[i] in numeros):
+                        estado = 3
+                    else:
+                        i = i - 1
+                        palavra.pop()
+                        lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                        listcol.append(col)
+                        listlinha.append(linha)
+                        estadolist.append(estado)
+                        estado = 0
+                        palavra = []
+
                 if(estado==1):
                     if(code[i] in numeros):
                         estado = 1
@@ -112,18 +142,7 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
-                if(estado == 2):
-                    if(code[i] in numeros):
-                        estado = 3
-                    else:
-                        i = i - 1
-                        palavra.pop()
-                        lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
-                        listcol.append(col)
-                        listlinha.append(linha)
-                        estadolist.append(estado)
-                        estado = 0
-                        palavra = []
+
                 if(estado == 3):
                     if(code[i] in numeros):
                         estado = 3
@@ -138,6 +157,7 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
+
                 if(estado == 4):
                     if(code[i] == '+' or code[i]=='-'):
                         estado = 5
@@ -165,6 +185,7 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
+
                 if(estado == 6):
                     if(code[i] in numeros):
                         estado = 6 
@@ -196,7 +217,7 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         estado = 11
                     else:
                         estado = 10
-                
+
                 if(estado==17):
                     if(code[i] == '='):
                         estado = 18
@@ -215,6 +236,7 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                     estadolist.append(estado)
                     estado = 0
                     palavra = []
+                    
                 i+=1
             estadolist.append(12)
             lexemalist.append('EOF')
@@ -240,5 +262,5 @@ Token = {
 }
 tabela = pd.DataFrame(Token)
 
-print(tabela)
+print(tabela.to_string())
 print(erros)
