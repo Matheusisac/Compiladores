@@ -6,11 +6,13 @@ col = 0
 linha = 0
 estado = 0
 palavra = []
-erros = []
+listlinha = []
+listcol = []
 lexemalist = []
 estadolist = []
 tipolist = []
 classelist = []
+erros = []
 
 estados_finais = {
     1: ('Num', None, 'inteiro'),
@@ -91,6 +93,8 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         estado=0
                     else:
                         lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                        listcol.append(col)
+                        listlinha.append(linha)
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
@@ -103,6 +107,8 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         i=i-1
                         palavra.pop()
                         lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                        listcol.append(col)
+                        listlinha.append(linha)
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
@@ -113,6 +119,8 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         i = i - 1
                         palavra.pop()
                         lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                        listcol.append(col)
+                        listlinha.append(linha)
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
@@ -125,6 +133,8 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         i = i - 1
                         palavra.pop()
                         lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                        listcol.append(col)
+                        listlinha.append(linha)
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
@@ -137,6 +147,8 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         i = i - 1
                         palavra.pop()
                         lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                        listcol.append(col)
+                        listlinha.append(linha)
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
@@ -148,6 +160,8 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         i = i - 1
                         palavra.pop()
                         lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                        listcol.append(col)
+                        listlinha.append(linha)
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
@@ -158,6 +172,8 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         i = i - 1
                         palavra.pop()
                         lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                        listcol.append(col)
+                        listlinha.append(linha)
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
@@ -169,6 +185,8 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         i = i - 1
                         palavra.pop()
                         lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                        listcol.append(col)
+                        listlinha.append(linha)
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
@@ -184,12 +202,16 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         estado = 18
                     else:
                         lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                        listcol.append(col)
+                        listlinha.append(linha)
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
                 
                 if(estado==8 or estado==11 or estado==14 or estado==15 or estado==16 or estado==18 or estado==19 or estado==20 or estado==21 or estado==22 or estado==23 or estado==24):
                     lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                    listcol.append(col)
+                    listlinha.append(linha)
                     estadolist.append(estado)
                     estado = 0
                     palavra = []
@@ -204,13 +226,16 @@ for i in range(len(lexemalist)):
             classelist.append(estados_finais[estadolist[i]][0])
             tipolist.append(estados_finais[estadolist[i]][2])
         except:
+            erros.append(f"Erro lexico na linha {listlinha[i]} e coluna {listcol[i]}")
             classelist.append("ERRO")
             tipolist.append("None")
 
-tabela = pd.DataFrame({
+Token = {
     'Classe': classelist,
     'Lexema': lexemalist,
     'Tipo': tipolist 
-})
+}
+tabela = pd.DataFrame(Token)
 
 print(tabela)
+print(erros)
