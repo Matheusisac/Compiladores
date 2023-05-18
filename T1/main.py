@@ -14,6 +14,9 @@ tipolist = []
 classelist = []
 erros = []
 
+
+#Tabela de Simbolos
+
 estados_finais = {
     1: ('Num', None, 'inteiro'),
     3: ('Num', None, 'real'),
@@ -35,11 +38,6 @@ estados_finais = {
     23: ('VIR', None, None),
     24: ('OPM', None, None),
 }
-tabela = pd.DataFrame(columns=['Classe', 'Lexema', 'Tipo'])
-path_arquivo_fonte = os.path.join(os.path.dirname(__file__), 'FONTE.ALG')
-
-arquivo_fonte = open(path_arquivo_fonte, mode='r', encoding='utf-8')
-
 letras = list(string.ascii_letters)
 numeros = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 reservadas = ['inicio', 'varinicio', 'varfim', 'escreva', 'leia', 'se', 'entao', 'fimse', 'Repita', 'fimRepita', 'fim', 'inteiro', 'literal', 'real']
