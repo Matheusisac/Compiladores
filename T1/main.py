@@ -252,9 +252,10 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                             listlinha.append(linha)
                             estadolist.append(estado)
                             estado = 0
+                            palavra = []
                     case 8:
                         palavra.pop()
-                        lexemalist.append(''.join(palavra).replace('\n',''))
+                        lexemalist.append(''.join(palavra))
                         listcol.append(col)
                         listlinha.append(linha)
                         estadolist.append(estado)
@@ -272,6 +273,7 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
             lexemalist.append('EOF')
             listcol.append(col)
             listlinha.append(linha)
+
 for i in range(len(lexemalist)):
     if(lexemalist[i] in reservadas):
         classelist.append(lexemalist[i])
