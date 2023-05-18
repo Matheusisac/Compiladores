@@ -72,7 +72,7 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                             listlinha.append(linha)
                             estadolist.append(estado)
                             estado = 0
-                            palavra = [code[i]]
+                            palavra = []
                     case 7:
                         if(code[i] == '"'):
                             i+=1
@@ -291,8 +291,10 @@ Token = {
 }
 
 tabela = pd.DataFrame(Token)
-
-print(tabela.to_string() + '\n')
+print(tabela.to_string())
+#for o in range(len(lexemalist)):
+#    print(tabela.loc[o])
+#    print(Token['Classe'][o])
 
 for n in erros:
-    print(n)
+    print('\n' + n)
