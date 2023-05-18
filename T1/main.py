@@ -51,75 +51,216 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
             state = 0
             i = 0
             while i < len(code):
-                char = code[i]
                 col += 1
+                print(code[i])
                 palavra.append(code[i])
                 if(code[i] == '\n'):
                     col = 0
                     linha += 1
+                match(estado):
+                    case 13:
+                        if(code[i] == '='):
+                            i+=1
+                            estado = 14
+                        elif(code[i] == '>'):
+                            i+=1
+                            estado = 15
+                        elif(code[i] == '-'):
+                            i+=1
+                            estado = 16
+                        else:
+                            palavra.pop()
+                            lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                            listcol.append(col)
+                            listlinha.append(linha)
+                            estadolist.append(estado)
+                            estado = 0
+                            palavra = [code[i]]
+                    case 7:
+                        if(code[i] == '"'):
+                            i+=1
+                            estado = 8
+                        else:
+                            estado = 7
+                            i+=1
+
+                    case 0:
+                        if(code[i] in numeros):
+                            i+=1
+                            estado = 1
+                        elif(code[i] in letras):
+                            i+=1
+                            estado = 9
+                        elif(code[i] == '{'):
+                            i+=1
+                            estado = 10
+                        elif(code[i]=='"'):
+                            i+=1
+                            estado = 7
+                        elif(code[i]=='<'):
+                            i+=1
+                            estado = 13
+                        elif(code[i]=='>'):
+                            i+=1
+                            estado = 17
+                        elif(code[i]=='='):
+                            i+=1
+                            estado = 19
+                        elif(code[i]=='('):
+                            i+=1
+                            estado=20
+                        elif(code[i]==')'):
+                            i+=1
+                            estado=21
+                        elif(code[i]==';'):
+                            i+=1
+                            estado=22
+                        elif(code[i]==','):
+                            i+=1
+                            estado=23
+                        elif(code[i]=='+' or code[i]=='-' or code[i]=='*' or code[i]=='/'):
+                            i+=1
+                            estado=24
+                        elif(code[i]==' ' or code[i]=='\n' or code[i]=='\t'):
+                            i+=1
+                            estado=0
+                        else:
+                            lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                            listcol.append(col)
+                            listlinha.append(linha)
+                            estadolist.append(estado)
+                            estado = 0
+                            palavra = []
+                            i+=1
+                            
+                    case 2:
+                        if(code[i] in numeros):
+                            i+=1
+                            estado = 3
+                        else:
+                            palavra.pop()
+                            lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                            listcol.append(col)
+                            listlinha.append(linha)
+                            estadolist.append(estado)
+                            estado = 0
+                            palavra = []
+
+                    case 1:
+                        if(code[i] in numeros):
+                            i+=1
+                            estado = 1
+                        elif(code[i] == '.'):
+                            i+=1
+                            estado = 2
+                        else:
+                            palavra.pop()
+                            lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                            listcol.append(col)
+                            listlinha.append(linha)
+                            estadolist.append(estado)
+                            estado = 0
+                            palavra = []
+
+                    case 3:
+                        if(code[i] in numeros):
+                            i+=1
+                            estado = 3
+                        elif(i == 'e' or i == 'E'):
+                            i+=1
+                            estado = 4
+                        else:
+                            palavra.pop()
+                            lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                            listcol.append(col)
+                            listlinha.append(linha)
+                            estadolist.append(estado)
+                            estado = 0
+                            palavra = []
+
+                    case 4:
+                        if(code[i] == '+' or code[i]=='-'):
+                            i+=1
+                            estado = 5
+                        elif(code[i] in numeros):
+                            i+=1
+                            estado = 6
+                        else:
+                            palavra.pop()
+                            lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                            listcol.append(col)
+                            listlinha.append(linha)
+                            estadolist.append(estado)
+                            estado = 0
+                            palavra = []
+
+                    case 5:
+                        if(code[i] in numeros):
+                            i+=1
+                            estado = 6
+                        else:
+                            palavra.pop()
+                            lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                            listcol.append(col)
+                            listlinha.append(linha)
+                            estadolist.append(estado)
+                            estado = 0
+                            palavra = []
+
+                    case 6:
+                        if(code[i] in numeros):
+                            i+=1
+                            estado = 6 
+                        else:
+                            palavra.pop()
+                            lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                            listcol.append(col)
+                            listlinha.append(linha)
+                            estadolist.append(estado)
+                            estado = 0
+                            palavra = []
+
+                    case 9:
+                        if(code[i] in letras):
+                            i+=1
+                            estado = 9
+                        else:
+                            palavra.pop()
+                            lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                            listcol.append(col)
+                            listlinha.append(linha)
+                            estadolist.append(estado)
+                            estado = 0
+                            palavra = []
                     
-                if(estado == 13):
-                    if(code[i] == '='):
-                        estado = 14
-                    elif(code[i] == '>'):
-                        estado = 15
-                    elif(code[i] == '-'):
-                        estado = 16
-                    else:
+                    case 10:
+                        if(code[i] == '}'):
+                            i+=1
+                            estado = 11
+                        else:
+                            estado = 10
+                            i+=1
+
+                    case 17:
+                        if(code[i] == '='):
+                            estado = 18
+                            i+=1
+                        else:
+                            palavra.pop()
+                            lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                            listcol.append(col)
+                            listlinha.append(linha)
+                            estadolist.append(estado)
+                            estado = 0
+                    case 8:
                         palavra.pop()
-                        lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
-                        listcol.append(col)
-                        listlinha.append(linha)
-                        estadolist.append(estado)
-                        estado = 0
-                        palavra = [code[i]]
-
-                if(estado == 7):
-                    if(code[i] == '"'):
-                        estado = 8
-                    else:
-                        estado = 7
-
-                if(estado==0):
-                    if(code[i] in numeros):
-                        estado = 1
-                    elif(code[i] in letras):
-                        estado = 9
-                    elif(code[i] == '{'):
-                        estado = 10
-                    elif(code[i]=='"'):
-                        estado = 7
-                    elif(code[i]=='<'):
-                        estado = 13
-                    elif(code[i]=='>'):
-                        estado = 17
-                    elif(code[i]=='='):
-                        estado = 19
-                    elif(code[i]=='('):
-                        estado=20
-                    elif(code[i]==')'):
-                        estado=21
-                    elif(code[i]==';'):
-                        estado=22
-                    elif(code[i]==','):
-                        estado=23
-                    elif(code[i]=='+' or code[i]=='-' or code[i]=='*' or code[i]=='/'):
-                        estado=24
-                    elif(code[i]==' ' or code[i]=='\n' or code[i]=='\t'):
-                        estado=0
-                    else:
-                        lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
+                        lexemalist.append(''.join(palavra).replace('\n',''))
                         listcol.append(col)
                         listlinha.append(linha)
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
-                        
-                if(estado == 2):
-                    if(code[i] in numeros):
-                        estado = 3
-                    else:
-                        i = i - 1
+                    case _:
                         palavra.pop()
                         lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
                         listcol.append(col)
@@ -127,117 +268,6 @@ with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
                         estadolist.append(estado)
                         estado = 0
                         palavra = []
-
-                if(estado==1):
-                    if(code[i] in numeros):
-                        estado = 1
-                    elif(code[i] == '.'):
-                        estado = 2
-                    else:
-                        i=i-1
-                        palavra.pop()
-                        lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
-                        listcol.append(col)
-                        listlinha.append(linha)
-                        estadolist.append(estado)
-                        estado = 0
-                        palavra = []
-
-                if(estado == 3):
-                    if(code[i] in numeros):
-                        estado = 3
-                    elif(i == 'e' or i == 'E'):
-                        estado = 4
-                    else:
-                        i = i - 1
-                        palavra.pop()
-                        lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
-                        listcol.append(col)
-                        listlinha.append(linha)
-                        estadolist.append(estado)
-                        estado = 0
-                        palavra = []
-
-                if(estado == 4):
-                    if(code[i] == '+' or code[i]=='-'):
-                        estado = 5
-                    elif(code[i] in numeros):
-                        estado = 6
-                    else:
-                        i = i - 1
-                        palavra.pop()
-                        lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
-                        listcol.append(col)
-                        listlinha.append(linha)
-                        estadolist.append(estado)
-                        estado = 0
-                        palavra = []
-
-                if(estado == 5):
-                    if(code[i] in numeros):
-                        estado = 6
-                    else:
-                        i = i - 1
-                        palavra.pop()
-                        lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
-                        listcol.append(col)
-                        listlinha.append(linha)
-                        estadolist.append(estado)
-                        estado = 0
-                        palavra = []
-
-                if(estado == 6):
-                    if(code[i] in numeros):
-                        estado = 6 
-                    else:
-                        i = i - 1
-                        palavra.pop()
-                        lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
-                        listcol.append(col)
-                        listlinha.append(linha)
-                        estadolist.append(estado)
-                        estado = 0
-                        palavra = []
-
-                if(estado == 9):
-                    if(code[i] in letras):
-                        estado = 9
-                    else:
-                        i = i - 1
-                        palavra.pop()
-                        lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
-                        listcol.append(col)
-                        listlinha.append(linha)
-                        estadolist.append(estado)
-                        estado = 0
-                        palavra = []
-                
-                if(estado==10):
-                    if(code[i] == '}'):
-                        estado = 11
-                    else:
-                        estado = 10
-
-                if(estado==17):
-                    if(code[i] == '='):
-                        estado = 18
-                    else:
-                        lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
-                        listcol.append(col)
-                        listlinha.append(linha)
-                        estadolist.append(estado)
-                        estado = 0
-                        palavra = []
-                
-                if(estado==8 or estado==11 or estado==14 or estado==15 or estado==16 or estado==18 or estado==19 or estado==20 or estado==21 or estado==22 or estado==23 or estado==24):
-                    lexemalist.append(''.join(palavra).replace('\t', '').replace('\n','').replace(' ', ''))
-                    listcol.append(col)
-                    listlinha.append(linha)
-                    estadolist.append(estado)
-                    estado = 0
-                    palavra = []
-                    
-                i+=1
             estadolist.append(12)
             lexemalist.append('EOF')
             listcol.append(col)
