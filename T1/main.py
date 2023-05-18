@@ -282,7 +282,7 @@ for i in range(len(lexemalist)):
             classelist.append(estados_finais[estadolist[i]][0])
             tipolist.append(estados_finais[estadolist[i]][2])
         except:
-            erros.append(f"Erro lexico na linha {listlinha[i]} e coluna {listcol[i]}")
+            erros.append(f"ERRO léxico – Caractere inválido na linguagem. Linha {listlinha[i]} e Coluna {listcol[i]}")
             classelist.append("ERRO")
             tipolist.append("None")
 
@@ -295,4 +295,6 @@ Token = {
 tabela = pd.DataFrame(Token)
 
 print(tabela.to_string() + '\n')
-print(erros)
+
+for n in erros:
+    print(n)
