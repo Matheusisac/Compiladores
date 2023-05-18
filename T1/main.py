@@ -46,13 +46,12 @@ reservadas = ['inicio', 'varinicio', 'varfim', 'escreva', 'leia', 'se', 'entao',
 
 
 #Scanner
+
 with open('D:/Compiladores-main/Compiladores-main/T1/FONTE.ALG', 'r') as file:
             code = file.read()
-            state = 0
             i = 0
             while i < len(code):
                 col += 1
-                print(code[i])
                 palavra.append(code[i])
                 if(code[i] == '\n'):
                     col = 0
@@ -292,7 +291,8 @@ Token = {
     'Lexema': lexemalist,
     'Tipo': tipolist 
 }
+
 tabela = pd.DataFrame(Token)
 
-print(tabela.to_string())
+print(tabela.to_string() + '\n')
 print(erros)
