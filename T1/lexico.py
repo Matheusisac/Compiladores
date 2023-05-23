@@ -33,7 +33,7 @@ class Lexico:
     #Scanner
     def Scanner(fonte, err = False):
         col = 0
-        linha = 0
+        linha = 1
         estado = 0
         palavra = []
         listlinha = []
@@ -51,8 +51,9 @@ class Lexico:
                 col += 1
                 palavra.append(code[i])
                 if(code[i] == '\n'):
+                    if(col>1):
+                        linha = linha + 1
                     col = 0
-                    linha = linha + 1
                 match(estado):
                     case 13:
                         if(code[i] == '='):
@@ -217,7 +218,7 @@ class Lexico:
                             palavra = []
 
                     case 9:
-                        if(code[i] in letras):
+                        if(code[i] in letras or code[i) == '_' or code[i] in numeros:
                             i+=1
                             estado = 9
                         else:
@@ -273,7 +274,7 @@ class Lexico:
         for i in range(len(lexemalist)):
             if(lexemalist[i] in reservadas):
                 classelist.append(lexemalist[i])
-                tipolist. append(lexemalist[i])
+                tipolist.append(lexemalist[i])
             else:
                 try:
                     temp = lexemalist[i]
