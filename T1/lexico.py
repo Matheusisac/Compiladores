@@ -276,8 +276,16 @@ class Lexico:
                 tipolist. append(lexemalist[i])
             else:
                 try:
-                    classelist.append(estados_finais[estadolist[i]][0])
-                    tipolist.append(estados_finais[estadolist[i]][2])
+                    temp = lexemalist[i]
+                    if(temp in lexemalist[0:i-1]):
+                        for n in range(len(lexemalist)):
+                            if(lexemalist[n] == temp):
+                                classelist.append(estados_finais[estadolist[n]][0])
+                                tipolist.append(estados_finais[estadolist[n]][2])
+                                temp = ''
+                    else:
+                        classelist.append(estados_finais[estadolist[i]][0])
+                        tipolist.append(estados_finais[estadolist[i]][2])
                 except:
                     erros.append(f"ERRO léxico – Caractere inválido na linguagem. Linha {listlinha[i]} e Coluna {listcol[i]}")
                     classelist.append("ERRO")
