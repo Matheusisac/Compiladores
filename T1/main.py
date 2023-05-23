@@ -7,4 +7,4 @@ df = pd.DataFrame(var)
 
 lexema = df.loc[0]['Lexema']
 
-print(lexema)
+print(df.to_string())
