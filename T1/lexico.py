@@ -218,7 +218,7 @@ class Lexico:
                             palavra = []
 
                     case 9:
-                        if(code[i] in letras or code[i) == '_' or code[i] in numeros:
+                        if((code[i] in letras) or (code[i) == '_') or (code[i] in numeros)):
                             i+=1
                             estado = 9
                         else:
