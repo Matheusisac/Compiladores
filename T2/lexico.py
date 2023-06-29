@@ -308,7 +308,9 @@ class Lexico:
             tabelaSimbolos = {
                 'Classe': reservadas + idclasselist,
                 'Lexema': reservadas + idlexemalist,
-                'Tipo' : reservadas + idtipolist
+                'Tipo' : reservadas + idtipolist,
+                'Linha' : listlinha,
+                'Coluna' : listcol
             }
             return tabelaSimbolos
 
@@ -316,7 +318,9 @@ class Lexico:
             Token = {
                 'Classe': classelist,
                 'Lexema': lexemalist,
-                'Tipo': tipolist 
+                'Tipo': tipolist,
+                'Linha' : listlinha,
+                'Coluna' : listcol
             }
             return Token
         else:
