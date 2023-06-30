@@ -111,3 +111,10 @@ while(True):
                 print(f'\nERRO SINTATICO - FALTA UM Argumento(literal, numeral ou identificador) Linha: {linha} Coluna {col} \n')
                 a = 'lit'
                 i=i-1
+                
+            if(int(action.loc[s][a.lower()][1:]) == 4):
+                linha = token.loc[i-1]['Linha']
+                col = token.loc[i-1]['Coluna']
+                print(f'\nERRO SINTATICO - FALTA UM Operando Linha: {linha} Coluna {col} \n')
+                a = 'id'
+                i=i-1
