@@ -27,7 +27,7 @@ gramatica = {
     23: 'OPRD->num',
     24: 'A->COND A',
     25: 'COND->CAB CP',
-    26: 'CAB->se ab_p EXP_R fc_p então',
+    26: 'CAB->se ab_p EXP_R fc_p entao',
     27: 'EXP_R->OPRD opr OPRD',
     28: 'CP->ES CP',
     29: 'CP->CMD CP',
@@ -89,4 +89,25 @@ while(True):
                 col = token.loc[i-1]['Coluna']
                 print(f'\nERRO SINTATICO - FALTA UM ";" Linha: {linha} Coluna {col} \n')
                 a = 'pt_v'
+                i=i-1
+
+            if(int(action.loc[s][a.lower()][1:]) == 1):
+                linha = token.loc[i-1]['Linha']
+                col = token.loc[i-1]['Coluna']
+                print(f'\nERRO SINTATICO - FALTA UM ")" Linha: {linha} Coluna {col} \n')
+                a = 'fc_p'
+                i=i-1
+
+            if(int(action.loc[s][a.lower()][1:]) == 2):
+                linha = token.loc[i-1]['Linha']
+                col = token.loc[i-1]['Coluna']
+                print(f'\nERRO SINTATICO - FALTA UM identificador Linha: {linha} Coluna {col} \n')
+                a = 'id'
+                i=i-1
+            
+            if(int(action.loc[s][a.lower()][1:]) == 3):
+                linha = token.loc[i-1]['Linha']
+                col = token.loc[i-1]['Coluna']
+                print(f'\nERRO SINTATICO - FALTA UM Argumento(literal, numeral ou identificador) Linha: {linha} Coluna {col} \n')
+                a = 'lit'
                 i=i-1
