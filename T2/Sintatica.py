@@ -1,4 +1,5 @@
 from lexico import Lexico
+from Semantico import Semantico
 import pandas as pd
 
 gramatica = {
@@ -43,13 +44,13 @@ gramatica = {
     39: 'A->fim'
 }
 erro=0
-var = Lexico.Scanner('D:/Aulas/Compiladores/Meus trabalhos/T1/T1/FONTE.ALG')
-erros = Lexico.Scanner('D:/Aulas/Compiladores/Meus trabalhos/T1/T1/FONTE.ALG', True)
-tabela = Lexico.Scanner('D:/Aulas/Compiladores/Meus trabalhos/T1/T1/FONTE.ALG', simbolos=True)
+var = Lexico.Scanner('D:/Aulas/Compiladores/Meus trabalhos/Compiladores-main/Compiladores-main/T2/FONTE.ALG')
+erros = Lexico.Scanner('D:/Aulas/Compiladores/Meus trabalhos/Compiladores-main/Compiladores-main/T2/FONTE.ALG', True)
 
-action = pd.read_csv('D:/Aulas/Compiladores/Meus trabalhos/T2/T2/p_action.csv')
-goto = pd.read_csv('D:/Aulas/Compiladores/Meus trabalhos/T2/T2/p_goto.csv')
-
+n=0
+action = pd.read_csv('D:/Aulas/Compiladores/Meus trabalhos/Compiladores-main/Compiladores-main/T2/p_action.csv')
+goto = pd.read_csv('D:/Aulas/Compiladores/Meus trabalhos/Compiladores-main/Compiladores-main/T2/p_goto.csv')
+tabela = []
 token = pd.DataFrame(var)
 i = 0
 pilha = [0]
@@ -74,6 +75,10 @@ while(True):
                 pilha.pop()
             print(AB + '\n')
             pilha.append(int(goto.loc[pilha[len(pilha)-1]][A]))
+            tabela.append(Semantico.leitura(AB,"obj.c", i, tabela))
+            if tabela[len(tabela)-1] == None:
+                tabela.pop()
+            n = n+1
             
 
         case 'A':
