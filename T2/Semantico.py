@@ -2,7 +2,7 @@
 from lexico import Lexico
 import pandas as pd
 class Semantico():
-    var = Lexico.Scanner('D:/Aulas/Compiladores/Meus trabalhos/T2/T2/FONTE.ALG')
+    var = Lexico.Scanner('D:/Aulas/Compiladores/Meus trabalhos/Compiladores-main/Compiladores-main/T2/FONTE.ALG')
     cod = pd.DataFrame(var)
 
     def leitura(AB, file, i, tabela, cod=cod):
@@ -24,33 +24,63 @@ class Semantico():
                     return cod.loc[i-1]["Lexema"]
                 
                 case 'L->id':
-                    if(cod.loc[i-2]["Lexema"]!=","):
-                        file.write(cod.loc[i-1]["Lexema"] + ";\n")
+                    file.write(cod.loc[i-1]["Lexema"] + ";\n")
                     return cod.loc[i-1]["Lexema"]
                 
                 case 'L->id vir L':
                     n=3
-                    file.write(cod.loc[i-3]["Lexema"] + ","+ cod.loc[i-1]["Lexema"])
-                    if(cod.loc[i]["Lexema"] == ";"):
-                        file.write(";\n")
-                    while(cod.loc[i-n]["Lexema"] == tabela[len(tabela)-1]):
-                        n= 2 + n
-                    return cod.loc[i-n]["Lexema"]
+                    fim = 0
+                    while fim != 1:
+                        id = cod.loc[i-n]["Lexema"]
+                        if id in tabela or id == "," or id == ';':
+                            n=n+1
+                        else:
+                            print(id)
+                            while(cod.loc[i-n]["Classe"]== "id" or cod.loc[n]["Lexema"]== ","):
+                                n=n+1
+                            if(cod.loc[i-n]["Lexema"] == "inteiro"):
+                                file.write('int ')
+                            if(cod.loc[i-n]["Lexema"] == "real"):
+                                file.write('double ')
+                            if(cod.loc[i-n]["Lexema"] == "literal"):
+                                file.write('literal ')
+                            file.write(id + ";\n")
+                            return id
                 
                 case 'ES->leia id pt_v':
+                    fim = 0
                     file.write("scanf(")
                     for m in range(0,len(tabela)):
                         if tabela[m] == cod.loc[i-2]['Lexema']:
-                            for n in range(0, m):
-                                if(tabela[m-n] == "inteiro"):
-                                    file.write('"' + '%d' + '"' + ", &" + tabela[m] + ");\n")
-                                elif(tabela[m-n] == "real"):
-                                    file.write('"' + '%lf' + '"' + ", &" + tabela[m] + ");\n")
-                                elif(tabela[m-n] == "literal"):
-                                    file.write('"' + '%s' + '" ' + tabela[m] + ");\n")
-                #Necessario correção, não esta funcionando direito
+                            for n in range(0, m+1):
+                                if fim == 0:
+                                    if(tabela[m-n] == "inteiro"):
+                                        file.write('"' + '%d' + '"' + ", &" + tabela[m] + ");\n")
+                                        fim = 1
+                                    elif(tabela[m-n] == "real"):
+                                        file.write('"' + '%lf' + '"' + ", &" + tabela[m] + ");\n")
+                                        fim = 1
+                                    elif(tabela[m-n] == "literal"):
+                                        file.write('"' + '%s' + '" ' + tabela[m] + ");\n")
+                                        fim = 1
 
                 case "ES->escreva ARG pt_v":
+                    fim = 0
                     file.write("printf(")
-                    file.write(cod.loc[i-2]["Lexema"]+")\n")
+                    if(cod.loc[i-2]["Classe"] == 'id'):
+                        for m in range(0,len(tabela)):
+                            if tabela[m] == cod.loc[i-2]['Lexema']:
+                                for n in range(0, m+1):
+                                    if fim == 0:
+                                        if(tabela[m-n] == "inteiro"):
+                                            file.write('"' + '%d' + '"' + "," + tabela[m] + ");\n")
+                                            fim = 1
+                                        elif(tabela[m-n] == "real"):
+                                            file.write('"' + '%lf' + '"' + "," + tabela[m] + ");\n")
+                                            fim = 1
+                                        elif(tabela[m-n] == "literal"):
+                                            file.write('"' + '%s' + '", ' + tabela[m] + ");\n")
+                                            fim = 1
+                    else:
+                        file.write(cod.loc[i-2]["Lexema"]+")\n")
 
