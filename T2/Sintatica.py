@@ -1,204 +1,270 @@
-
 from lexico import Lexico
+from Semantico import Semantico
 import pandas as pd
-class Semantico():
-    var = Lexico.Scanner('D:/Aulas/Compiladores/Compiladores-main/T2/FONTE.ALG')
-    cod = pd.DataFrame(var)
 
-    def leitura(AB, file, i, tabela, linha, col, cod=cod):
-        with open(file, 'a') as file:
-            match(AB):
-                case'LV->varfim pt_v':
-                    linha_atual = []
-                    tipo_atual = None
-                    tabela1 = []
-                    for item in tabela:
-                        if item == "inteiro" or item == "literal" or item == "real":
-                            if linha_atual:
-                                tabela1.append(linha_atual)
-                            linha_atual = [item]
-                            tipo_atual = item
-                        else:
-                            if tipo_atual is not None:
-                                linha_atual.append(item)
 
-                    if linha_atual:
-                        tabela1.append(linha_atual)
+with open('obj.c', "w") as file:
+    file.truncate(0)
+    file.write("""#include<stdio.h>\n
+typedef char literal[256]\n
+void main(void){\n""")
+gramatica = {
+    1: "P'->P",
+    2: "P->inicio V A",
+    3: "V->varincio LV",
+    4: "LV->D LV",
+    5: "LV->varfim pt_v",
+    6: "D->TIPO L pt_v",
+    7: "L->id vir L",
+    8: "L->id",
+    9: "TIPO->inteiro",
+    10: "TIPO->real",
+    11: "TIPO->literal",
+    12: "A->ES A",
+    13: 'ES->leia id pt_v',
+    14: 'ES->escreva ARG pt_v',
+    15: 'ARG->lit',
+    16: 'ARG->num',
+    17: 'ARG->id',
+    18: 'A->CMD A',
+    19: 'CMD->id rcb LD pt_v',
+    20: 'LD->OPRD opm OPRD',
+    21: 'LD->OPRD',
+    22: 'OPRD->id',
+    23: 'OPRD->num',
+    24: 'A->COND A',
+    25: 'COND->CAB CP',
+    26: 'CAB->se ab_p EXP_R fc_p entao',
+    27: 'EXP_R->OPRD opr OPRD',
+    28: 'CP->ES CP',
+    29: 'CP->CMD CP',
+    30: 'CP->COND CP',
+    31: 'CP->fimse',
+    32: 'A->R A',
+    33: 'R->CABR CPR',
+    34: 'CABR->repita ab_p EXP_R fc_p',
+    35: 'CPR->ES CPR',
+    36: 'CPR->CMD CPR',
+    37: 'CPR->COND CPR',
+    38: 'CPR->fimrepita',
+    39: 'A->fim'
+}
+erro=0
+var = Lexico.Scanner('D:/Aulas/Compiladores/Compiladores-main/T2/FONTE.ALG')
+erros = Lexico.Scanner('D:/Aulas/Compiladores/Compiladores-main/T2/FONTE.ALG', True)
+tabela = []
+n=0
+action = pd.read_csv('D:/Aulas/Compiladores/Compiladores-main/T2/p_action.csv')
+goto = pd.read_csv('D:/Aulas/Compiladores/Compiladores-main/T2/p_goto.csv')
+j=0
+token = pd.DataFrame(var)
+i = 0
+pilha = [0]
+a = ''
+while(True):
+    s = pilha[len(pilha)-1]
+    if(a == ''):
+        try:
+            a = token.loc[i]['Classe']
+        except:
+            a = 'eof'
+    if(a == "ERRO"):
+        erro = 1
+        print("\n" + erros[j]+ "\n")
+        j=j+1
+        i=i+1
+        a=''
+    else:
+        match((action.loc[s][a.lower()])[0]):
 
-                    return tabela1
+            case 'S':
+                pilha.append(int(action.loc[s][a.lower()][1:]))
+                a=''
+                i = i + 1
 
-                case 'TIPO->inteiro':
-                    file.write("\tint"+ " ")
-                    tabela1 = tabela
-                    tabela1.append(cod.loc[i-1]["Lexema"])
-                    return tabela1
+            case 'R':
+                AB = gramatica[int(action.loc[s][a.lower()][1:])]
+                A,B = AB.split('->')
+                for n in range(len(B.split(' '))):
+                    pilha.pop()
+                print(AB + '\n')
+                pilha.append(int(goto.loc[pilha[len(pilha)-1]][A]))
+                if(AB == "LV->varfim pt_v" or A == "TIPO" or A == "L"):
+                    tabela = Semantico.leitura(AB,"obj.c", i, tabela, token.loc[i-1]['Linha'], token.loc[i-1]['Coluna'])
+                else:
+                    Semantico.leitura(AB,"obj.c", i, tabela, token.loc[i-1]['Linha'], token.loc[i-1]['Coluna'])
+                n = n+1
                 
-                case 'TIPO->real':
-                    file.write("\tdouble" + " ")
-                    tabela1 = tabela
-                    tabela1.append(cod.loc[i-1]["Lexema"])
-                    return tabela1
-                
-                case 'TIPO->literal':
-                    file.write("\tliteral" + " ")
-                    tabela1 = tabela
-                    tabela1.append(cod.loc[i-1]["Lexema"])
-                    return tabela1
-                
-                case 'L->id':
-                    file.write(cod.loc[i-1]["Lexema"] + ";\n")
-                    tabela1 = tabela
-                    tabela1.append(cod.loc[i-1]["Lexema"])
-                    return tabela1
-                
-                case 'L->id vir L':
-                    n=3
-                    fim = 0
-                    while fim != 1:
-                        id = cod.loc[i-n]["Lexema"]
-                        if id in tabela or id == "," or id == ';':
-                            n=n+1
-                        else:
-                            while(cod.loc[i-n]["Classe"]== "id" or cod.loc[i-n]["Lexema"]== ","):
-                                n=n+1
-                            if(cod.loc[i-n]["Lexema"] == "inteiro"):
-                                file.write('\tint ')
-                            if(cod.loc[i-n]["Lexema"] == "real"):
-                                file.write('\tdouble ')
-                            if(cod.loc[i-n]["Lexema"] == "literal"):
-                                file.write('\tliteral ')
-                            file.write(id + ";\n")
-                        tabela1 = tabela
-                        tabela1.append(id)
-                        return tabela1
-                    
-                case "ES->leia id pt_v":
-                    count = 0
-                    for n in range (0, len(tabela)):
-                        if cod.loc[i-2]["Lexema"] in tabela[n]:
-                            match(tabela[n][0]):
-                                case "inteiro":
-                                    file.write("\tscanf("+ '"' + '%d'+'"'+', &' + cod.loc[i-2]["Lexema"]+');\n')
-                                    count = 0
-                                case "literal":
-                                    file.write("\tscanf("+ '"' + '%s'+'"'+', &' + cod.loc[i-2]["Lexema"]+');\n')
-                                    count = 0
-                                case "real":
-                                    file.write("\tscanf("+ '"' + '%lf'+'"'+',' + cod.loc[i-2]["Lexema"]+');\n')
-                                    count = 0
-                        else:
-                            count = count + 1
-                    if(count == len(tabela)):
-                        print(f"Erro: Variável não declarada, linha: {linha} coluna {col}")
-                        
-                
-                case "ES->escreva ARG pt_v":
-                    match(cod.loc[i-2]["Classe"]):
-                        case "Lit":
-                            file.write("\tprintf(" +cod.loc[i-2]["Lexema"]+");\n")
-                        case "Num":
-                            file.write('\tprintf("'+ cod.loc[i-1]["Lexema"]+'");\n')
-                        case "id":
-                            count = 0
-                            for n in range (0, len(tabela)):
-                                if cod.loc[i-2]["Lexema"] in tabela[n]:
-                                    match(tabela[n][0]):
-                                        case "inteiro":
-                                            file.write('\tprintf("' + '%d'+'"'+',' + cod.loc[i-2]["Lexema"]+');\n')
-                                            count = 0
-                                        case "literal":
-                                            file.write('\tprintf("' + '%s'+'"'+',' + cod.loc[i-2]["Lexema"]+');\n')
-                                            count = 0
-                                        case "real":
-                                            file.write('\tprintf("' + '%lf'+'"'+',' + cod.loc[i-2]["Lexema"]+');\n')
-                                            count = 0
-                                else:
-                                    count = count + 1
-                            if(count == len(tabela)):
-                                print(f"Erro: Variável não declarada, linha: {linha} coluna {col}")
-                                
-                        
-                case "CMD->id rcb LD pt_v":
-                    fim=0
-                    n=0
-                    count=0
-                    while fim == 0:
-                        n=n+1
-                        if cod.loc[i-n]["Lexema"] == "<-":
-                            fim = 1
-                            id = cod.loc[i-n-1]["Lexema"]
-                            for m in range(0, len(tabela)):
-                                if id in tabela[m]:
-                                    if(cod.loc[i-n+1]["Classe"] == 'id'):
-                                        count = 0
-                                        for t in range(0, len(tabela)):
-                                            if cod.loc[i-n+1]["Lexema"] in tabela[t]:
-                                                if  tabela[t][0] == tabela[m][0]:
-                                                    file.write("\t"+id+"="+cod.loc[i-n+1]["Lexema"])
-                                                    count =0
-                                                else:
-                                                    print(f"Erro: Tipos diferentes para atribuição, linha: {linha} coluna {col}")
-                                                    count = 0
-                                            else:
-                                                count = count+1
-                                            if(count == len(tabela)):
-                                                print(f"Erro: Variável não declarada, linha: {linha} coluna {col}")
-                                                count = 0
-                                                
-                                                
-                                    else:
-                                        if(tabela[m][0] == cod.loc[i-n+1]["Tipo"]):
-                                            file.write("\t"+id+"="+cod.loc[i-n+1]["Lexema"])
-                                            count = 0
-                                        else:
-                                            print(f"Erro: Tipos diferentes para atribuição, linha: {linha} coluna {col}")
-                                            count = 0
-                                            
-                                else:
-                                    count= count+1
-                            if(count == len(tabela)):
-                                print(f"Erro: Variável não declarada, linha: {linha} coluna {col}")
-                                
-                            t=0
-                            for t in range (i-n,i):
-                                if(cod.loc[t]["Classe"]=="OPM"):
-                                    file.write(cod.loc[t]["Lexema"]+cod.loc[t+1]["Lexema"])
-                                if(cod.loc[t]["Lexema"]==";"):
-                                    file.write(";\n")
 
-                case "COND->CAB CP":
-                    file.write("\t}\n")
-                
-                case "CAB->se ab_p EXP_R fc_p entao":
-                    file.write("\tif("+cod.loc[i-5]["Lexema"]+""+cod.loc[i-4]["Lexema"]+""+cod.loc[i-3]["Lexema"]+"){\n")
+            case 'A':
+                if erro == 0:
+                    print('Aceito')
+                else:
+                    print('Com erro Sintatico')
+                break
 
-                case 'EXP_R->OPRD opr OPRD':
+            case 'E':
+                erro = 1
+                if(int(action.loc[s][a.lower()][1:]) == 0):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - FALTA UM ";" Linha: {linha} Coluna {col} \n')
+                    a = 'pt_v'
+                    i=i-1
 
-                    if cod.loc[i-3]['Classe'] == "id":
-                        id1 = cod.loc[i-3]['Lexema']
-                        print(id1)
-                        for t in range (0,len(tabela)):
-                            if id1 in tabela[t]:
-                                Tipo1 = tabela[t][0]
-                    else:
-                        Tipo1=cod.loc[i-2]["Tipo"]
-                    if cod.loc[i-1]['Classe'] == "id":
-                        id2 = cod.loc[i-1]['Lexema']
-                        print(id2)
-                        for t in range (0,len(tabela)):
-                            if id2 in tabela[t]:
-                                Tipo2 = tabela[t][0]
-                    else:
-                        Tipo2=cod.loc[i-1]["Tipo"]
-                        fim = 0
-                    if Tipo1 != Tipo2:
-                        print(f"Erro: Tipos são imcompativeis, linha: {linha} coluna {col}")
+                elif(int(action.loc[s][a.lower()][1:]) == 1):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - FALTA UM ")" Linha: {linha} Coluna {col} \n')
+                    a = 'fc_p'
+                    i=i-1
+
+                elif(int(action.loc[s][a.lower()][1:]) == 2):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - FALTA UM identificador Linha: {linha} Coluna {col} \n')
+                    a = 'id'
+                    i=i-1
                 
-                case "P->inicio V A":
-                    file.write("}\n")
+                elif(int(action.loc[s][a.lower()][1:]) == 3):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - FALTA UM Argumento(literal, numeral ou identificador) Linha: {linha} Coluna {col} \n')
+                    a = 'lit'
+                    i=i-1
+
+                elif(int(action.loc[s][a.lower()][1:]) == 4):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - FALTA UM Operando Linha: {linha} Coluna {col} \n')
+                    a = 'id'
+                    i=i-1
+
+                elif(int(action.loc[s][a.lower()][1:]) == 5):
+                    linha = token.loc[i]['Linha']
+                    col = token.loc[i]['Coluna']
+                    print(f'\nERRO SINTATICO - Codigo tem que iniciar com "inicio" Linha: {linha} Coluna {col} \n')
+                    a = 'inicio'
+                    i=i+1
                 
-                case "CAB->se ab_p EXP_R fc_p entao":
-                    file.write("\twhile("+cod.loc[i-5]["Lexema"]+""+cod.loc[i-4]["Lexema"]+""+cod.loc[i-3]["Lexema"]+"){\n")
+                elif(int(action.loc[s][a.lower()][1:]) == 6):
+                    linha = token.loc[i]['Linha']
+                    col = token.loc[i]['Coluna']
+                    print(f'\nERRO SINTATICO - Esperando um "varinicio" Linha: {linha} Coluna {col} \n')
+                    a = 'varinicio'
+                    i=i-1
                 
-                case "CP_R->fimrepita":
-                    file.write("\t}\n")
+                elif(int(action.loc[s][a.lower()][1:]) == 7):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - O codigo está finalizado no fim Linha: {linha} Coluna {col} \n')
+                    a = 'eof'
+                    i=i-1
+
+                elif(int(action.loc[s][a.lower()][1:]) == 8):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Precisa-se declarar um TIPO Linha: {linha} Coluna {col} \n')
+                    a = 'literal'
+                    i=i-1
+                
+                elif(int(action.loc[s][a.lower()][1:]) == 9):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Não foi encontrado o "fim" Linha: {linha} Coluna {col} \n')
+                    a = 'fim'
+                    i=i+1
+                
+                elif(int(action.loc[s][a.lower()][1:]) == 10):
+                    linha = token.loc[i]['Linha']
+                    col = token.loc[i]['Coluna']
+                    print(f'\nERRO SINTATICO - Erro inesperado Linha: {linha} Coluna {col} \n')
+                    a=''
+                    i=i+1
+
+                elif(int(action.loc[s][a.lower()][1:]) == 11):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Não foi encontrado o "fimrepita" Linha: {linha} Coluna {col} \n')
+                    a = 'fimrepita'
+                    i=i-1
+
+                elif(int(action.loc[s][a.lower()][1:]) == 12):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Não foi encontrado o "fimse" Linha: {linha} Coluna {col} \n')
+                    a = 'fimse'
+                    i=i-1
+                
+                elif(int(action.loc[s][a.lower()][1:]) == 13):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Não foi encontrado o "entao" Linha: {linha} Coluna {col} \n')
+                    a = 'entao'
+                    i=i-1
+
+                elif(int(action.loc[s][a.lower()][1:]) == 14):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Não foi encontrado o "opm" Linha: {linha} Coluna {col} \n')
+                    a = 'opm'
+                    i=i-1
+
+                elif(int(action.loc[s][a.lower()][1:]) == 15):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Não foi encontrado o "rcb" Linha: {linha} Coluna {col} \n')
+                    a = 'rcb'
+                    i=i-1
+                
+                elif(int(action.loc[s][a.lower()][1:]) == 16):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Em vez de um operador, é um receba Linha: {linha} Coluna {col} \n')
+                    a = 'rcb'
+
+                elif(int(action.loc[s][a.lower()][1:]) == 17):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Falta uma virgula Linha: {linha} Coluna {col} \n')
+                    a = 'vir'
+                    i=i-1
+
+                elif(int(action.loc[s][a.lower()][1:]) == 18):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Falta o TIPO Linha: {linha} Coluna {col} \n')
+                    a = 'real'
+                    i=i-1
+                
+                elif(int(action.loc[s][a.lower()][1:]) == 19):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Era pra ser um id Linha: {linha} Coluna {col} \n')
+                    a = 'id'
+                
+                elif(int(action.loc[s][a.lower()][1:]) == 20):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - FALTA UM "(" Linha: {linha} Coluna {col} \n')
+                    a = 'ab_p'
+                    i=i-1
+                
+                elif(int(action.loc[s][a.lower()][1:]) == 21):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Era pra ser um Argumento Linha: {linha} Coluna {col} \n')
+                    a = 'id'
+                
+                elif(int(action.loc[s][a.lower()][1:]) == 22):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - Era pra ser um Identificador Linha: {linha} Coluna {col} \n')
+                    a = 'id'
+                
+                elif(int(action.loc[s][a.lower()][1:]) == 23):
+                    linha = token.loc[i-1]['Linha']
+                    col = token.loc[i-1]['Coluna']
+                    print(f'\nERRO SINTATICO - FALTA UM "escreva" Linha: {linha} Coluna {col} \n')
+                    a = 'escreva'
+                    i=i-1
