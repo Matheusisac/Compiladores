@@ -1,4 +1,3 @@
-
 from lexico import Lexico
 import pandas as pd
 class Semantico():
@@ -73,6 +72,7 @@ class Semantico():
                         return tabela1
                     
                 case "ES->leia id pt_v":
+                    ERRO_SEMANTICO = 0
                     count = 0
                     for n in range (0, len(tabela)):
                         if cod.loc[i-2]["Lexema"] in tabela[n]:
@@ -89,10 +89,16 @@ class Semantico():
                         else:
                             count = count + 1
                     if(count == len(tabela)):
+                        ERRO_SEMANTICO = 1
                         print(f"Erro: Variável não declarada, linha: {linha} coluna {col}")
+                    if ERRO_SEMANTICO == 1:
+                        tabela1 = tabela
+                        tabela1.append("ERRO_SEMANTICO")
+                        return tabela1
                         
                 
                 case "ES->escreva ARG pt_v":
+                    ERRO_SEMANTICO = 0
                     match(cod.loc[i-2]["Classe"]):
                         case "Lit":
                             file.write("\tprintf(" +cod.loc[i-2]["Lexema"]+");\n")
@@ -116,9 +122,15 @@ class Semantico():
                                     count = count + 1
                             if(count == len(tabela)):
                                 print(f"Erro: Variável não declarada, linha: {linha} coluna {col}")
+                                ERRO_SEMANTICO = 1
+                    if ERRO_SEMANTICO == 1:
+                        tabela1 = tabela
+                        tabela1.append("ERRO_SEMANTICO")
+                        return tabela1
                                 
                         
                 case "CMD->id rcb LD pt_v":
+                    ERRO_SEMANTICO = 0
                     fim=0
                     n=0
                     count=0
@@ -137,11 +149,13 @@ class Semantico():
                                                     file.write("\t"+id+"="+cod.loc[i-n+1]["Lexema"])
                                                     count =0
                                                 else:
+                                                    ERRO_SEMANTICO = 1
                                                     print(f"Erro: Tipos diferentes para atribuição, linha: {linha} coluna {col}")
                                                     count = 0
                                             else:
                                                 count = count+1
                                             if(count == len(tabela)):
+                                                ERRO_SEMANTICO = 1
                                                 print(f"Erro: Variável não declarada, linha: {linha} coluna {col}")
                                                 count = 0
                                                 
@@ -150,14 +164,13 @@ class Semantico():
                                         if(tabela[m][0] == cod.loc[i-n+1]["Tipo"]):
                                             file.write("\t"+id+"="+cod.loc[i-n+1]["Lexema"])
                                             count = 0
-                                        else:
-                                            print(f"Erro: Tipos diferentes para atribuição, linha: {linha} coluna {col}")
+                                        elif(count != 0):
+                                            ERRO_SEMANTICO = 1
+                                            print(f"Erro: Tipos diferentes para atribuição, linha: aqui {linha} coluna {col}")
                                             count = 0
                                             
                                 else:
                                     count= count+1
-                            if(count == len(tabela)):
-                                print(f"Erro: Variável não declarada, linha: {linha} coluna {col}")
                                 
                             t=0
                             for t in range (i-n,i):
@@ -165,6 +178,12 @@ class Semantico():
                                     file.write(cod.loc[t]["Lexema"]+cod.loc[t+1]["Lexema"])
                                 if(cod.loc[t]["Lexema"]==";"):
                                     file.write(";\n")
+                                    
+                    if ERRO_SEMANTICO == 1:
+                        tabela1 = tabela
+                        tabela1.append("ERRO_SEMANTICO")
+                        return tabela1
+               
 
                 case "COND->CAB CP":
                     file.write("\t}\n")
@@ -173,10 +192,10 @@ class Semantico():
                     file.write("\tif("+cod.loc[i-5]["Lexema"]+""+cod.loc[i-4]["Lexema"]+""+cod.loc[i-3]["Lexema"]+"){\n")
 
                 case 'EXP_R->OPRD opr OPRD':
+                    ERRO_SEMANTICO = 0
 
                     if cod.loc[i-3]['Classe'] == "id":
                         id1 = cod.loc[i-3]['Lexema']
-                        print(id1)
                         for t in range (0,len(tabela)):
                             if id1 in tabela[t]:
                                 Tipo1 = tabela[t][0]
@@ -184,7 +203,6 @@ class Semantico():
                         Tipo1=cod.loc[i-2]["Tipo"]
                     if cod.loc[i-1]['Classe'] == "id":
                         id2 = cod.loc[i-1]['Lexema']
-                        print(id2)
                         for t in range (0,len(tabela)):
                             if id2 in tabela[t]:
                                 Tipo2 = tabela[t][0]
@@ -193,12 +211,17 @@ class Semantico():
                         fim = 0
                     if Tipo1 != Tipo2:
                         print(f"Erro: Tipos são imcompativeis, linha: {linha} coluna {col}")
+                        ERRO_SEMANTICO = 1
+                    if ERRO_SEMANTICO == 1:
+                        tabela1 = tabela
+                        tabela1.append("ERRO_SEMANTICO")
+                        return tabela1
                 
                 case "P->inicio V A":
                     file.write("}\n")
                 
-                case "CAB->se ab_p EXP_R fc_p entao":
-                    file.write("\twhile("+cod.loc[i-5]["Lexema"]+""+cod.loc[i-4]["Lexema"]+""+cod.loc[i-3]["Lexema"]+"){\n")
+                case "CABR->repita ab_p EXP_R fc_p":
+                    file.write("\twhile("+cod.loc[i-4]["Lexema"]+""+cod.loc[i-3]["Lexema"]+""+cod.loc[i-2]["Lexema"]+"){\n")
                 
-                case "CP_R->fimrepita":
+                case "CPR->fimrepita":
                     file.write("\t}\n")
