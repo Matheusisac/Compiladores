@@ -1,5 +1,6 @@
 from lexico import Lexico
 from Semantico import Semantico
+import os
 import pandas as pd
 
 
@@ -94,23 +95,26 @@ while(True):
                 else:
                     Semantico.leitura(AB,"obj.c", i, tabela, token.loc[i-1]['Linha'], token.loc[i-1]['Coluna'])
                 n = n+1
-                
 
             case 'A':
                 if erro == 0:
                     print('Aceito')
-                else:
-                    print('Com erro Sintatico')
+                if(erro==1 or 'ERRO_SEMANTICO' in tabela):
+                    os.remove("obj.c")
+                    print('Com erro')
                 break
 
             case 'E':
                 erro = 1
+
                 if(int(action.loc[s][a.lower()][1:]) == 0):
                     linha = token.loc[i-1]['Linha']
                     col = token.loc[i-1]['Coluna']
                     print(f'\nERRO SINTATICO - FALTA UM ";" Linha: {linha} Coluna {col} \n')
                     a = 'pt_v'
                     i=i-1
+
+
 
                 elif(int(action.loc[s][a.lower()][1:]) == 1):
                     linha = token.loc[i-1]['Linha']
@@ -119,19 +123,24 @@ while(True):
                     a = 'fc_p'
                     i=i-1
 
+
+
                 elif(int(action.loc[s][a.lower()][1:]) == 2):
                     linha = token.loc[i-1]['Linha']
                     col = token.loc[i-1]['Coluna']
                     print(f'\nERRO SINTATICO - FALTA UM identificador Linha: {linha} Coluna {col} \n')
                     a = 'id'
                     i=i-1
+
                 
+
                 elif(int(action.loc[s][a.lower()][1:]) == 3):
                     linha = token.loc[i-1]['Linha']
                     col = token.loc[i-1]['Coluna']
                     print(f'\nERRO SINTATICO - FALTA UM Argumento(literal, numeral ou identificador) Linha: {linha} Coluna {col} \n')
                     a = 'lit'
                     i=i-1
+
 
                 elif(int(action.loc[s][a.lower()][1:]) == 4):
                     linha = token.loc[i-1]['Linha']
@@ -146,14 +155,14 @@ while(True):
                     print(f'\nERRO SINTATICO - Codigo tem que iniciar com "inicio" Linha: {linha} Coluna {col} \n')
                     a = 'inicio'
                     i=i+1
-                
+
                 elif(int(action.loc[s][a.lower()][1:]) == 6):
                     linha = token.loc[i]['Linha']
                     col = token.loc[i]['Coluna']
                     print(f'\nERRO SINTATICO - Esperando um "varinicio" Linha: {linha} Coluna {col} \n')
                     a = 'varinicio'
                     i=i-1
-                
+
                 elif(int(action.loc[s][a.lower()][1:]) == 7):
                     linha = token.loc[i-1]['Linha']
                     col = token.loc[i-1]['Coluna']
@@ -167,14 +176,14 @@ while(True):
                     print(f'\nERRO SINTATICO - Precisa-se declarar um TIPO Linha: {linha} Coluna {col} \n')
                     a = 'literal'
                     i=i-1
-                
+
                 elif(int(action.loc[s][a.lower()][1:]) == 9):
                     linha = token.loc[i-1]['Linha']
                     col = token.loc[i-1]['Coluna']
                     print(f'\nERRO SINTATICO - Não foi encontrado o "fim" Linha: {linha} Coluna {col} \n')
                     a = 'fim'
                     i=i+1
-                
+
                 elif(int(action.loc[s][a.lower()][1:]) == 10):
                     linha = token.loc[i]['Linha']
                     col = token.loc[i]['Coluna']
@@ -195,7 +204,7 @@ while(True):
                     print(f'\nERRO SINTATICO - Não foi encontrado o "fimse" Linha: {linha} Coluna {col} \n')
                     a = 'fimse'
                     i=i-1
-                
+
                 elif(int(action.loc[s][a.lower()][1:]) == 13):
                     linha = token.loc[i-1]['Linha']
                     col = token.loc[i-1]['Coluna']
@@ -216,7 +225,7 @@ while(True):
                     print(f'\nERRO SINTATICO - Não foi encontrado o "rcb" Linha: {linha} Coluna {col} \n')
                     a = 'rcb'
                     i=i-1
-                
+
                 elif(int(action.loc[s][a.lower()][1:]) == 16):
                     linha = token.loc[i-1]['Linha']
                     col = token.loc[i-1]['Coluna']
@@ -236,32 +245,32 @@ while(True):
                     print(f'\nERRO SINTATICO - Falta o TIPO Linha: {linha} Coluna {col} \n')
                     a = 'real'
                     i=i-1
-                
+
                 elif(int(action.loc[s][a.lower()][1:]) == 19):
                     linha = token.loc[i-1]['Linha']
                     col = token.loc[i-1]['Coluna']
                     print(f'\nERRO SINTATICO - Era pra ser um id Linha: {linha} Coluna {col} \n')
                     a = 'id'
-                
+
                 elif(int(action.loc[s][a.lower()][1:]) == 20):
                     linha = token.loc[i-1]['Linha']
                     col = token.loc[i-1]['Coluna']
                     print(f'\nERRO SINTATICO - FALTA UM "(" Linha: {linha} Coluna {col} \n')
                     a = 'ab_p'
                     i=i-1
-                
+
                 elif(int(action.loc[s][a.lower()][1:]) == 21):
                     linha = token.loc[i-1]['Linha']
                     col = token.loc[i-1]['Coluna']
                     print(f'\nERRO SINTATICO - Era pra ser um Argumento Linha: {linha} Coluna {col} \n')
                     a = 'id'
-                
+
                 elif(int(action.loc[s][a.lower()][1:]) == 22):
                     linha = token.loc[i-1]['Linha']
                     col = token.loc[i-1]['Coluna']
                     print(f'\nERRO SINTATICO - Era pra ser um Identificador Linha: {linha} Coluna {col} \n')
                     a = 'id'
-                
+
                 elif(int(action.loc[s][a.lower()][1:]) == 23):
                     linha = token.loc[i-1]['Linha']
                     col = token.loc[i-1]['Coluna']
